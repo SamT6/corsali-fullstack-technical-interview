@@ -4,12 +4,22 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "@codemirror/lang-javascript": "^0.19.2",
+    "@codemirror/lang-json": "^0.19.1",
+    "@emotion/react": "^11.5.0",
+    "@emotion/styled": "^11.3.0",
+    "@mui/icons-material": "^5.0.5",
+    "@mui/material": "^5.0.6",
+    "@uiw/react-codemirror": "^4.1.0",
+    "@uiw/react-textarea-code-editor": "^1.4.4",
     "@zeit/next-css": "^1.0.1",
     "classnames": "^2.2.6",
     "lodash": "^4.17.19",
     "next": "^9.5.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "next-fonts": "^1.5.1",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "react-markdown": "^6.0.3"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",

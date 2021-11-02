@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import ReactMarkdown from 'react-markdown';
 import path from 'path';
 import { TextField, Button, Grid } from '@mui/material';
 import css from './style.css';
 
 
-function PlaintextEditor({ file, write }) {
+function MarkdownEditor({ file, write }) {
   const [value, setValue] = useState('');
   const [saved, setSaved] = useState(false);
+
 
   useEffect(() => {
     const localStoredFile = window.localStorage.getItem(`${file.name}-cache`);
@@ -23,7 +25,6 @@ function PlaintextEditor({ file, write }) {
       setSaved(true);
     }
   }, [file]);
-
 
   const onSaveButtonClick = () => {
     // construct updated file object
@@ -59,9 +60,13 @@ function PlaintextEditor({ file, write }) {
     setSaved(false);
   }
 
+
   return (
     <div className={css.editor}>
+
       <div className={css.title}>{path.basename(file.name)}</div>
+      <ReactMarkdown children={value}></ReactMarkdown>
+
       <TextField id="outlined-basic" label="editing..." variant="outlined" 
           fullWidth multiline maxRows={12} value={value}
           onChange={onTextChange}/>
@@ -77,9 +82,9 @@ function PlaintextEditor({ file, write }) {
   );
 }
 
-PlaintextEditor.propTypes = {
+MarkdownEditor.propTypes = {
   file: PropTypes.object,
   write: PropTypes.func
 };
 
-export default PlaintextEditor;
+export default MarkdownEditor;

@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import path from 'path';
-import { TextField, Button, Grid } from '@mui/material';
+import { Button, Grid } from '@mui/material';
+import CodeMirror from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
+import { json } from "@codemirror/lang-json";
 import css from './style.css';
 
 
-function PlaintextEditor({ file, write }) {
+function CodeEditor({ file, write }) {
   const [value, setValue] = useState('');
   const [saved, setSaved] = useState(false);
 
@@ -23,7 +26,6 @@ function PlaintextEditor({ file, write }) {
       setSaved(true);
     }
   }, [file]);
-
 
   const onSaveButtonClick = () => {
     // construct updated file object
@@ -53,18 +55,32 @@ function PlaintextEditor({ file, write }) {
     window.localStorage.setItem(`${file.name}-cache`, fileCache);
   }
 
-  const onTextChange = (event) => {
-    saveCacheToLocalStorage(event.target.value);
-    setValue(event.target.value);
+  const onTextChange = (code) => {
+    saveCacheToLocalStorage(code);
+    setValue(code);
     setSaved(false);
   }
+
 
   return (
     <div className={css.editor}>
       <div className={css.title}>{path.basename(file.name)}</div>
-      <TextField id="outlined-basic" label="editing..." variant="outlined" 
-          fullWidth multiline maxRows={12} value={value}
-          onChange={onTextChange}/>
+      {
+          file.type == 'text/javascript' ? 
+          <CodeMirror
+            value={value}
+            height="300px"
+            extensions={[javascript({ jsx: true })]}
+            onChange={onTextChange}
+          />
+          :
+          <CodeMirror
+            value={value}
+            height="100px"
+            extensions={[json()]}
+            onChange={onTextChange}
+          />
+      }
       <Grid container justifyContent="flex-end">
         {
           !saved ? 
@@ -77,9 +93,9 @@ function PlaintextEditor({ file, write }) {
   );
 }
 
-PlaintextEditor.propTypes = {
+CodeEditor.propTypes = {
   file: PropTypes.object,
   write: PropTypes.func
 };
 
-export default PlaintextEditor;
+export default CodeEditor;

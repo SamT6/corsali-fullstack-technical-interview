@@ -1,0 +1,17 @@
+.editor {
+    width: 640px;
+    background-color: var(--color-white);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .editor .title {
+    width: 100%;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-dark-mute);
+    line-height: 40px;
+    background-color: var(--color-white);
+  }

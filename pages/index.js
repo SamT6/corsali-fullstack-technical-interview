@@ -7,15 +7,21 @@ import classNames from 'classnames';
 import { listFiles } from '../files';
 
 // Used below, these need to be registered
-import MarkdownEditor from '../MarkdownEditor';
+import MarkdownEditor from '../components/MarkdownEditor';
 import PlaintextEditor from '../components/PlaintextEditor';
+import CodeEditor from '../components/CodeEditior';
 
 import IconPlaintextSVG from '../public/icon-plaintext.svg';
 import IconMarkdownSVG from '../public/icon-markdown.svg';
 import IconJavaScriptSVG from '../public/icon-javascript.svg';
 import IconJSONSVG from '../public/icon-json.svg';
 
+import CreateIcon from '@mui/icons-material/Create';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import {IconButton} from '@mui/material';
+
 import css from './style.module.css';
+import CreateNewFile from '../components/CreateNewFile';
 
 const TYPE_TO_ICON = {
   'text/plain': IconPlaintextSVG,
@@ -24,12 +30,13 @@ const TYPE_TO_ICON = {
   'application/json': IconJSONSVG
 };
 
-function FilesTable({ files, activeFile, setActiveFile }) {
+function FilesTable({ files, activeFile, setActiveFile, editButtonClick, deleteButtonClick}) {
   return (
     <div className={css.files}>
       <table>
         <thead>
           <tr>
+            <th> </th>
             <th>File</th>
             <th>Modified</th>
           </tr>
@@ -44,6 +51,11 @@ function FilesTable({ files, activeFile, setActiveFile }) {
               )}
               onClick={() => setActiveFile(file)}
             >
+              <td>
+                <IconButton onClick={() => deleteButtonClick(file.name)}>
+                  <DeleteForeverIcon />
+                </IconButton>
+              </td>
               <td className={css.file}>
                 <div
                   className={css.icon}
@@ -61,6 +73,11 @@ function FilesTable({ files, activeFile, setActiveFile }) {
                   month: 'long',
                   day: 'numeric'
                 })}
+              </td>
+              <td>
+                <IconButton onClick={editButtonClick}>
+                  <CreateIcon />
+                </IconButton>
               </td>
             </tr>
           ))}
@@ -99,26 +116,72 @@ Previewer.propTypes = {
 
 // Uncomment keys to register editors for media types
 const REGISTERED_EDITORS = {
-  // "text/plain": PlaintextEditor,
-  // "text/markdown": MarkdownEditor,
+  "text/plain": PlaintextEditor,
+  "text/markdown": MarkdownEditor,
+  "text/javascript": CodeEditor,
+  "application/json": CodeEditor,
 };
 
 function PlaintextFilesChallenge() {
   const [files, setFiles] = useState([]);
   const [activeFile, setActiveFile] = useState(null);
+  const [edit, setEdit] = useState(false);
+
 
   useEffect(() => {
     const files = listFiles();
-    setFiles(files);
+    // load from local storage, for changes persisting across reloads
+    const updateFilesFromLocalStorage = files.map(file => {
+      const localStoredFile = window.localStorage.getItem(`${file.name}-cache`);
+      if (localStoredFile) {
+        const fileObject = JSON.parse(localStoredFile);
+        console.log(fileObject);
+        return new File(
+          [
+            fileObject.content
+          ],
+          fileObject.name,
+          {
+            type: fileObject.type,
+            lastModified: new Date(fileObject.lastModified)
+          }
+        );
+      } 
+      else{
+        return file;
+      }
+    })
+
+    setFiles(updateFilesFromLocalStorage);
   }, []);
 
   const write = file => {
     console.log('Writing soon... ', file.name);
 
-    // TODO: Write the file to the `files` array
+    // Write the file to the `files` array
+    const index = files.findIndex((f) => f.name == file.name);
+    if(index != -1){ // file found! update a existing file
+      const updatedFiles = [...files];
+      updatedFiles[index] = file;
+      setFiles(updatedFiles);
+    }
+    else{ //file not found, save a new file
+      setFiles([file, ...files]);
+    }
   };
 
   const Editor = activeFile ? REGISTERED_EDITORS[activeFile.type] : null;
+
+  const editButtonClick = () => {
+   setEdit(!edit);
+  }
+
+  const deleteButtonClick = (fileName) => {
+    window.localStorage.removeItem(`${fileName}-cache`);
+    const updatedFiles = files.filter(file => file.name != fileName);
+    setFiles(updatedFiles);
+  }
+
 
   return (
     <div className={css.page}>
@@ -135,10 +198,16 @@ function PlaintextFilesChallenge() {
           </div>
         </header>
 
+        
+        <CreateNewFile write={write}/>
+
+
         <FilesTable
           files={files}
           activeFile={activeFile}
           setActiveFile={setActiveFile}
+          editButtonClick={editButtonClick}
+          deleteButtonClick={deleteButtonClick}
         />
 
         <div style={{ flex: 1 }}></div>
@@ -157,8 +226,8 @@ function PlaintextFilesChallenge() {
       <main className={css.editorWindow}>
         {activeFile && (
           <>
-            {Editor && <Editor file={activeFile} write={write} />}
-            {!Editor && <Previewer file={activeFile} />}
+            {edit  && <Editor file={activeFile} write={write} />}
+            {!edit && <Previewer file={activeFile} />}
           </>
         )}
 
