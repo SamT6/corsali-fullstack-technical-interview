@@ -39,11 +39,11 @@ Supported file types: txt, md, js, json
 Overall, I had a lot of fun so thanks for the challenge!  
 
 ## Project Screenshots
-<img src="./Images/text_edit.png" alt="text-edit" width="300"/>
-<img src="./Images/md_edit.png" alt="md-edit" width="300"/>
-<img src="./Images/js_edit.png" alt="js-edit" width="300"/>
-<img src="./Images/json_edit.png" alt="json-edit" width="300"/>
-<img src="./Images/create_file.png" alt="create-file" width="300"/>
+<img src="./Images/text_edit.png" alt="text-edit" width="600"/>
+<img src="./Images/md_edit.png" alt="md-edit" width="600"/>
+<img src="./Images/js_edit.png" alt="js-edit" width="600"/>
+<img src="./Images/json_edit.png" alt="json-edit" width="600"/>
+<img src="./Images/create_file.png" alt="create-file" width="600"/>
 
 
 ## Challenge Info
